@@ -37,4 +37,10 @@ public class HttpRequestTest {
         assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/operator",
                 String.class)).contains("Hello, operator!");
     }
+
+    @Test
+    public void shouldReturnOwnerPage() {
+        assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/owner",
+                String.class)).contains("Hello, Mr. Owner!");
+    }
 }
