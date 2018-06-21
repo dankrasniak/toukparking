@@ -25,4 +25,10 @@ public class HttpRequestTest {
         assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/",
                 String.class)).contains("I am a");
     }
+
+    @Test
+    public void shouldReturnDriverPage() throws Exception {
+        assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/driver",
+                String.class)).contains("Hello, driver!");
+    }
 }
