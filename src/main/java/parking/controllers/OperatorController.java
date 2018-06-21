@@ -4,10 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class DriverController {
+public class OperatorController {
 
-    @GetMapping("/driver")
-    public String driverGreeter() {
-        return "/driver";
+    @GetMapping("/operator")
+    public String operatorGreeter() {
+        return "/operator";
     }
 }

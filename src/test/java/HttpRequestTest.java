@@ -21,14 +21,20 @@ public class HttpRequestTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void shouldReturnIAmA() throws Exception {
+    public void shouldReturnIAmA() {
         assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/",
                 String.class)).contains("I am a");
     }
 
     @Test
-    public void shouldReturnDriverPage() throws Exception {
+    public void shouldReturnDriverPage() {
         assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/driver",
                 String.class)).contains("Hello, driver!");
+    }
+
+    @Test
+    public void shouldReturnOperatorPage() {
+        assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/operator",
+                String.class)).contains("Hello, operator!");
     }
 }
