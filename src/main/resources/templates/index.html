@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body align="center">
+<p th:text="${iama}"></p>
+<form action="/driver">
+    <input type="submit" th:value="${driverText}"/>
+</form>
+<form action="/operator">
+    <input type="submit" th:value="${operatorText}"/>
+</form>
+<form action="/owner">
+    <input type="submit" th:value="${ownerText}"/>
+</form>
+</body>
+
+</html>

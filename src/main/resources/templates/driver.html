@@ -1,15 +1,15 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Driver window</title>
+    <title th:text="${title}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body align="center">
 <p th:text="${greeting}"></p>
 <form action="#" th:action="@{/savePlate}" th:object="${plate}" method="post">
-    <p>Plates: <input type="text" th:field="*{plateNr}"/></p>
+    <span th:text="${platesText}"/>: <input type="text" th:field="*{plateNr}"/>
     <!--<p>VIP: <input type="checkbox" th:field="*{vip}"/></p>-->
-    <p><input type="submit" value="Submit"/></p>
+    <p><input type="submit" th:value="${submitText}"/></p>
 </form>
 </body>
 </html>

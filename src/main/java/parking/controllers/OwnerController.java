@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class OwnerController {
 
-    @Value("${greeting.owner}")
-    private String greeting;
+    @Value("${owner.title}") private String title;
+    @Value("${owner.greeting}") private String greeting;
 
     @GetMapping("/owner")
     public String ownerGreeter(Model model) {
-        model.addAttribute("greeting", this.greeting);
-        return "/owner";
+        model.addAttribute("title", title);
+        model.addAttribute("greeting", greeting);
+        return "owner";
     }
 
 }

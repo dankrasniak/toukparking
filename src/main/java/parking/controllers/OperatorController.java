@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class OperatorController {
 
-    @Value("${greeting.operator}")
-    private String greeting;
+    @Value("${operator.title}") private String title;
+    @Value("${operator.greeting}") private String greeting;
 
     @GetMapping("/operator")
     public String operatorGreeter(Model model) {
-        model.addAttribute("greeting", this.greeting);
-        return "/operator";
+        model.addAttribute("title", title);
+        model.addAttribute("greeting", greeting);
+        return "operator";
     }
 }
