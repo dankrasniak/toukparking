@@ -59,11 +59,10 @@ public class MockTest {
 
     @Test
     public void shouldContainPlateNrInParameters() throws Exception {
-        Plate plate = new Plate();
-        plate.setPlateNr("ASDASD");
-        mockMvc.perform(post("/savePlate").param("plateNr", plate.getPlateNr()).sessionAttr("plate", new Plate()))
+        final String EXAMPLE_PLATE_NR = "ASDASD";
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR).sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("plate", hasProperty("plateNr", is(plate.getPlateNr()))));
+                .andExpect(model().attribute("plate", hasProperty("plateNr", is(EXAMPLE_PLATE_NR))));
     }
 
     @Test
