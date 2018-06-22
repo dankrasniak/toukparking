@@ -1,13 +1,13 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${title}"></title>
+    <title th:text="#{return.title}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<h1 th:text="${result}"></h1>
-<p th:text="${enteredPlatesText} + ': ' + ${plateNr}" ></p>
+<h1 th:text="#{return.result}"></h1>
+<p th:text="#{return.enteredPlatesText} + ': ' + ${plateNr}" ></p>
 <br>
-<a href="/driver" th:text="${returnText}"></a>
+<a href="/driver" th:text="#{return.returnText}"></a>
 </body>
 </html>
