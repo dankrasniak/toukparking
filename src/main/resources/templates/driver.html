@@ -2,19 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Driver window</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body align="center">
-<!--/*@thymesVar id="greeting" type="String"*/-->
 <p th:text="${greeting}"></p>
-<form>
-    <br>
-    <br>
-    <!--Plates number: <input type = "text" th:text="${plates_nr}"/>-->
-    <br>
-    <br>
-    VIP: <input type = "checkbox" name = "vip"/>
-    <input type="submit" name="submit_pay" value="Submit"/>
+<form action="#" th:action="@{/savePlate}" th:object="${plate}" method="post">
+    <p>Plates: <input type="text" th:field="*{plateNr}"/></p>
+    <!--<p>VIP: <input type="checkbox" th:field="*{vip}"/></p>-->
+    <p><input type="submit" value="Submit"/></p>
 </form>
 </body>
 </html>
