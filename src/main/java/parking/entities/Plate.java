@@ -3,6 +3,7 @@ package parking.entities;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.Instant;
 
 @Entity
 public class Plate {
@@ -12,6 +13,24 @@ public class Plate {
     private Long id;
     private String plateNr;
     private boolean vip;
+    private Instant start;
+    private Instant end;
+
+    public Instant getStart() {
+        return start;
+    }
+
+    public void setStart(Instant start) {
+        this.start = start;
+    }
+
+    public Instant getEnd() {
+        return end;
+    }
+
+    public void setEnd(Instant end) {
+        this.end = end;
+    }
 
     public Long getId() {
         return id;

@@ -1,3 +1,4 @@
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import parking.Application;
 import parking.entities.Plate;
 import parking.repositories.PlateRepository;
+
+import java.time.Instant;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.*;
@@ -100,5 +103,39 @@ public class MockTest {
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Plate number not found")));
+    }
+
+    @Test
+    public void shouldNotFindPlatesByDriverWhereEndIsNotNull() throws Exception {
+        final String EXAMPLE_PLATE_NR = "ASDASD";
+        Plate plate = new Plate();
+        plate.setPlateNr(EXAMPLE_PLATE_NR);
+        plate.setEnd(Instant.now());
+
+        plateRepository.save(plate);
+
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Plate number not found")));
+    }
+
+    @Test
+    public void shouldFindOpenPlatesByDriverWhereEndIsNull() throws Exception {
+        final String EXAMPLE_PLATE_NR = "ASDASD";
+        Plate plate = new Plate();
+        plate.setPlateNr(EXAMPLE_PLATE_NR);
+
+        plateRepository.save(plate);
+
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Plate found!")));
+    }
+
+    @Before
+    public void setUp() {
+        plateRepository.deleteAll();
     }
 }
