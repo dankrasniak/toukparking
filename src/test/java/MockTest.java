@@ -72,4 +72,13 @@ public class MockTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(EXAMPLE_PLATE_NR)));
     }
+
+    @Test
+    public void shouldContainExamplePlate() throws Exception {
+        final String EXAMPLE_PLATE_NR = "ASDASD";
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR).sessionAttr("plate", new Plate()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(EXAMPLE_PLATE_NR)))
+                .andExpect(content().string(containsString("Plate found!")));
+    }
 }

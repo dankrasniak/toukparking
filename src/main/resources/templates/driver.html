@@ -7,7 +7,7 @@
 <body align="center">
 <p th:text="#{driver.greeting}"></p>
 <form action="#" th:action="@{/savePlate}" th:object="${plate}" method="post">
-    <span th:text="#{driver.platesText}"/>: <input type="text" th:field="*{plateNr}"/>
+    <span th:text="#{driver.platesText}"></span>: <input type="text" th:field="*{plateNr}"/>
     <!--<p>VIP: <input type="checkbox" th:field="*{vip}"/></p>-->
     <p><input type="submit" th:value="#{common.submitText}"/></p>
 </form>
