@@ -3,18 +3,16 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import parking.Application;
 import parking.entities.Plate;
+import parking.repositories.PlateRepository;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -24,6 +22,9 @@ public class MockTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private PlateRepository plateRepository;
 
     @Test
     public void shouldGreetDriver() throws Exception {
@@ -60,25 +61,44 @@ public class MockTest {
     @Test
     public void shouldContainPlateNrInParameters() throws Exception {
         final String EXAMPLE_PLATE_NR = "ASDASD";
-        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR).sessionAttr("plate", new Plate()))
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("plate", hasProperty("plateNr", is(EXAMPLE_PLATE_NR))));
     }
 
     @Test
-    public void shouldContainPlateNrInBody() throws Exception {
+    public void shouldContainPlateNrInModel() throws Exception {
         final String EXAMPLE_PLATE_NR = "ASDASD";
-        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR).sessionAttr("plate", new Plate()))
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(EXAMPLE_PLATE_NR)));
+                .andExpect(model().attributeExists("plateNr"));
     }
 
     @Test
     public void shouldContainExamplePlate() throws Exception {
         final String EXAMPLE_PLATE_NR = "ASDASD";
-        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR).sessionAttr("plate", new Plate()))
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(EXAMPLE_PLATE_NR)))
-                .andExpect(content().string(containsString("Plate found!")));
+                .andExpect(model().attribute("plateNr", containsString(EXAMPLE_PLATE_NR)));
+    }
+
+    @Test
+    public void shouldRepositoryContainExamplePlate() throws Exception {
+        final String EXAMPLE_PLATE_NR = "ASDASD";
+        mockMvc.perform(post("/addPlate").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()));
+        assertTrue(plateRepository.findByPlateNr(EXAMPLE_PLATE_NR).isPresent());
+    }
+
+    @Test
+    public void shouldRepositoryNotContainExamplePlate() throws Exception {
+        final String EXAMPLE_PLATE_NR = "ASDASD";
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Plate number not found")));
     }
 }

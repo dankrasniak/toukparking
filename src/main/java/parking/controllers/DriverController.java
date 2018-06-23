@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import parking.entities.Plate;
 import parking.repositories.PlateRepository;
 
+import java.util.Optional;
+
 @Controller
 public class DriverController {
 
@@ -27,9 +29,20 @@ public class DriverController {
 
     @PostMapping("/savePlate")
     public String savePlateSubmit(@ModelAttribute Plate plate, Model model) {
+        model.addAttribute("plate", plate);
         model.addAttribute("plateNr", plate.getPlateNr());
-        return "result";
+
+        Optional<Plate> searchResult = plateRepository.findByPlateNr(plate.getPlateNr());
+
+        if (searchResult.isPresent())
+            return "result";
+
+        return "plateNotFound";
     }
 
-
+    @PostMapping("/addPlate")
+    public String plateNotFound(@ModelAttribute Plate plate) {
+        plateRepository.save(plate);
+        return "plateAdded";
+    }
 }

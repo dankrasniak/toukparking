@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{plateNotFound.title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+    <h1 th:text="#{plateNotFound.plateNotFound}"></h1>
+    <span th:text="#{plateNotFound.add}"></span>
+    <form action="#" th:action="@{/addPlate}" th:object="${plate}" method="post">
+        <span th:text="#{driver.platesText}"></span>: <input type="text" th:field="*{plateNr}" hidden/>
+        <span th:text="#{plateNotFound.vip}"></span>: <input type="checkbox" th:field="*{vip}"/>
+        <p><input type="submit" th:value="#{common.submitText}"/></p>
+    </form>
+    <form action="/driver">
+        <input type="submit" th:value="#{common.returnText}"/>
+    </form>
+    <form action="/">
+        <input type="submit" th:value="#{common.returnHome}"/>
+    </form>
+</body>
+</html>
