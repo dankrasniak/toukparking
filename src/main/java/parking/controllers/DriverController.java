@@ -37,7 +37,7 @@ public class DriverController {
                 .filter(p -> p.getEnd() == null);
 
         if (searchResult.isPresent())
-            return "result";
+            return "plateFound";
         return "plateNotFound";
     }
 

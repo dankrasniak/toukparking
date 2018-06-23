@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{result.title}"></title>
+    <title th:text="#{plateFound.title}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
-    <h1 th:text="#{result.result}"></h1>
-    <p th:text="#{result.enteredPlatesText}+': '+${plateNr}"></p>
+    <h1 th:text="#{plateFound.result}"></h1>
+    <p th:text="#{plateFound.enteredPlatesText}+': '+${plateNr}"></p>
     <br>
-    <p th:text="#{result.plateFound}"></p>
+    <p th:text="#{plateFound.plateFound}"></p>
     <br>
     <a href="/driver" th:text="#{common.returnText}"></a>
 </body>

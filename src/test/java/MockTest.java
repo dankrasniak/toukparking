@@ -35,6 +35,11 @@ public class MockTest {
     @Autowired
     private Environment env;
 
+    @Before
+    public void setUp() {
+        plateRepository.deleteAll();
+    }
+
     @Test
     public void shouldGreetDriver() throws Exception {
         System.out.println(env.getProperty("result.plateFound"));
@@ -138,11 +143,6 @@ public class MockTest {
         mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(env.getProperty("result.plateFound"))));
-    }
-
-    @Before
-    public void setUp() {
-        plateRepository.deleteAll();
+                .andExpect(content().string(containsString(env.getProperty("plateFound.plateFound"))));
     }
 }
