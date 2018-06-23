@@ -4,6 +4,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import parking.Application;
@@ -21,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
+@PropertySource("classpath:messages.properties")
 public class MockTest {
 
     @Autowired
@@ -29,22 +32,26 @@ public class MockTest {
     @Autowired
     private PlateRepository plateRepository;
 
+    @Autowired
+    private Environment env;
+
     @Test
     public void shouldGreetDriver() throws Exception {
+        System.out.println(env.getProperty("result.plateFound"));
         this.mockMvc.perform(get("/driver")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("driver")));
+                .andExpect(content().string(containsString(env.getProperty("driver.title"))));
     }
 
     @Test
     public void shouldGreetOperator() throws Exception {
         this.mockMvc.perform(get("/operator")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("operator")));
+                .andExpect(content().string(containsString(env.getProperty("operator.title"))));
     }
 
     @Test
     public void shouldGreetOwner() throws Exception {
         this.mockMvc.perform(get("/owner")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Owner")));
+                .andExpect(content().string(containsString(env.getProperty("owner.title"))));
     }
 
     @Test
@@ -102,7 +109,7 @@ public class MockTest {
         mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Plate number not found")));
+                .andExpect(content().string(containsString(env.getProperty("plateNotFound.plateNotFound"))));
     }
 
     @Test
@@ -117,7 +124,7 @@ public class MockTest {
         mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Plate number not found")));
+                .andExpect(content().string(containsString(env.getProperty("plateNotFound.plateNotFound"))));
     }
 
     @Test
@@ -131,7 +138,7 @@ public class MockTest {
         mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Plate found!")));
+                .andExpect(content().string(containsString(env.getProperty("result.plateFound"))));
     }
 
     @Before
