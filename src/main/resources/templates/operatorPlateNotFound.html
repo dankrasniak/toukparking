@@ -1,16 +1,12 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{plateFound.title}"></title>
+    <title th:text="#{operatorPlateNotFound.title}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
-    <h1 th:text="#{plateFound.result}"></h1>
-    <p th:text="#{plateFound.enteredPlatesText}+': '+${plateNr}"></p>
-    <br>
-    <p th:text="#{plateFound.plateFound}"></p>
-    <br>
-    <form action="/driver">
+    <h1 th:text="#{operatorPlateNotFound.plateNotFound}"></h1>
+    <form action="/operator">
         <input type="submit" th:value="#{common.returnText}"/>
     </form>
     <form action="/">

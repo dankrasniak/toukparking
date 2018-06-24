@@ -5,6 +5,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body align="center">
-<p th:text="#{operator.greeting}"></p>
+    <p th:text="#{operator.greeting}"></p>
+    <form action="#" th:action="@{/operatorPlateSearch}" th:object="${plate}" method="post">
+        <span th:text="#{driver.platesText}"></span>: <input type="text" th:field="*{plateNr}"/>
+        <p><input type="submit" th:value="#{common.submitText}"/></p>
+    </form>
+    <form action="/">
+        <input type="submit" th:value="#{common.returnHome}"/>
+    </form>
 </body>
 </html>

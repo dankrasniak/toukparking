@@ -42,7 +42,6 @@ public class MockTest {
 
     @Test
     public void shouldGreetDriver() throws Exception {
-        System.out.println(env.getProperty("result.plateFound"));
         this.mockMvc.perform(get("/driver")).andExpect(status().isOk())
                 .andExpect(content().string(containsString(env.getProperty("driver.title"))));
     }
@@ -75,7 +74,7 @@ public class MockTest {
 
     @Test
     public void shouldContainPlateNrInParameters() throws Exception {
-        final String EXAMPLE_PLATE_NR = "ASDASD";
+        final String EXAMPLE_PLATE_NR = "12345678";
         mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
@@ -84,7 +83,7 @@ public class MockTest {
 
     @Test
     public void shouldContainPlateNrInModel() throws Exception {
-        final String EXAMPLE_PLATE_NR = "ASDASD";
+        final String EXAMPLE_PLATE_NR = "12345678";
         mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
@@ -93,7 +92,7 @@ public class MockTest {
 
     @Test
     public void shouldContainExamplePlate() throws Exception {
-        final String EXAMPLE_PLATE_NR = "ASDASD";
+        final String EXAMPLE_PLATE_NR = "12345678";
         mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
@@ -102,7 +101,7 @@ public class MockTest {
 
     @Test
     public void shouldRepositoryContainExamplePlate() throws Exception {
-        final String EXAMPLE_PLATE_NR = "ASDASD";
+        final String EXAMPLE_PLATE_NR = "12345678";
         mockMvc.perform(post("/addPlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()));
         assertTrue(plateRepository.findByPlateNr(EXAMPLE_PLATE_NR).isPresent());
@@ -110,7 +109,7 @@ public class MockTest {
 
     @Test
     public void shouldRepositoryNotContainExamplePlate() throws Exception {
-        final String EXAMPLE_PLATE_NR = "ASDASD";
+        final String EXAMPLE_PLATE_NR = "12345678";
         mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
@@ -119,7 +118,7 @@ public class MockTest {
 
     @Test
     public void shouldNotFindPlatesByDriverWhereEndIsNotNull() throws Exception {
-        final String EXAMPLE_PLATE_NR = "ASDASD";
+        final String EXAMPLE_PLATE_NR = "12345678";
         Plate plate = new Plate();
         plate.setPlateNr(EXAMPLE_PLATE_NR);
         plate.setEnd(Instant.now());
@@ -134,7 +133,7 @@ public class MockTest {
 
     @Test
     public void shouldFindOpenPlatesByDriverWhereEndIsNull() throws Exception {
-        final String EXAMPLE_PLATE_NR = "ASDASD";
+        final String EXAMPLE_PLATE_NR = "12345678";
         Plate plate = new Plate();
         plate.setPlateNr(EXAMPLE_PLATE_NR);
 
@@ -144,5 +143,52 @@ public class MockTest {
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(env.getProperty("plateFound.plateFound"))));
+    }
+
+    @Test
+    public void shouldOperatorContainPlateParam() throws Exception {
+        mockMvc.perform(get("/operator"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("plate"));
+    }
+
+    @Test
+    public void shouldOperatorContainPlateNrParam() throws Exception {
+        mockMvc.perform(get("/operator"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("plate", hasProperty("plateNr")));
+    }
+
+    @Test
+    public void shouldOperatorSearchPlatePageContainPlateNrParam() throws Exception {
+        final String EXAMPLE_PLATE_NR = "12345678";
+
+        mockMvc.perform(post("/operatorPlateSearch").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("plateNr"));
+    }
+
+    @Test
+    public void shouldOperatorSearchPlatePageFindPlateWithGivenNr() throws Exception {
+        final String EXAMPLE_PLATE_NR = "12345678";
+        Plate plate = new Plate();
+        plate.setPlateNr(EXAMPLE_PLATE_NR);
+        plateRepository.save(plate);
+
+        mockMvc.perform(post("/operatorPlateSearch").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(env.getProperty("operatorPlateFound.plateFound"))));
+    }
+
+    @Test
+    public void shouldOperatorSearchPlatePageNotFindPlateWithGivenNr() throws Exception {
+        final String EXAMPLE_PLATE_NR = "12345678";
+
+        mockMvc.perform(post("/operatorPlateSearch").param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", new Plate()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(env.getProperty("operatorPlateNotFound.plateNotFound"))));
     }
 }
