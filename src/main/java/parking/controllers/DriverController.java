@@ -30,11 +30,14 @@ public class DriverController {
 
     @PostMapping("/savePlate")
     public String savePlateSubmit(@ModelAttribute Plate plate, Model model) {
+        Instant now = Instant.now();
+        plate.setEnd(now);
         model.addAttribute("plate", plate);
         model.addAttribute("plateNr", plate.getPlateNr());
+        model.addAttribute("end", plate.getEnd());
 
-        Optional<Plate> searchResult = plateRepository.findByPlateNr(plate.getPlateNr())
-                .filter(p -> p.getEnd() == null);
+        Optional<Plate> searchResult = plateRepository.findByPlateNr(plate.getPlateNr()).parallelStream()
+                .filter(p -> p.getEnd() == null).findAny();
 
         if (searchResult.isPresent())
             return "plateFound";
@@ -43,8 +46,23 @@ public class DriverController {
 
     @PostMapping("/addPlate")
     public String plateNotFound(@ModelAttribute Plate plate) {
+        plate.setEnd(null);
         plate.setStart(Instant.now());
         plateRepository.save(plate);
+
         return "plateAdded";
+    }
+
+    @PostMapping("/stopAndPay")
+    public String stopAndPay(@ModelAttribute Plate plate) {
+        Optional<Plate> searchResult = plateRepository.findByPlateNr(plate.getPlateNr()).parallelStream()
+                .filter(p -> p.getEnd() == null).findAny();
+        if (!searchResult.isPresent())
+            return "unexpectedError";
+
+        searchResult.get().setEnd(plate.getEnd());
+
+        plateRepository.save(searchResult.get());
+        return "successfullyStoppedMeter";
     }
 }

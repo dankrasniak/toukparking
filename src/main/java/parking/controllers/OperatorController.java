@@ -33,8 +33,8 @@ public class OperatorController {
         model.addAttribute("plate", plate);
         model.addAttribute("plateNr", plate.getPlateNr());
 
-        Optional<Plate> searchResult = plateRepository.findByPlateNr(plate.getPlateNr())
-                .filter(p -> p.getEnd() == null);
+        Optional<Plate> searchResult = plateRepository.findByPlateNr(plate.getPlateNr()).parallelStream()
+                .filter(p -> p.getEnd() == null).findAny();
 
         if (searchResult.isPresent())
             return "operatorPlateFound";

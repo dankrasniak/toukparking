@@ -10,6 +10,15 @@
     <br>
     <p th:text="#{plateFound.plateFound}"></p>
     <br>
+    <p th:text="#{plateFound.stopAndPay}"></p>
+    <br>
+    <form action="#" th:action="@{/stopAndPay}" th:object="${plate}" method="post">
+        <input type="text" th:field="*{plateNr}" hidden/>
+        <input type="text" th:field="*{end}" hidden/>
+        <input type="submit" th:value="#{plateFound.ok}"/>
+    </form>
+
+
     <form action="/driver">
         <input type="submit" th:value="#{common.returnText}"/>
     </form>

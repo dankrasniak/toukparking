@@ -14,6 +14,7 @@ import parking.repositories.PlateRepository;
 
 import java.time.Instant;
 
+import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -104,7 +105,7 @@ public class MockTest {
         final String EXAMPLE_PLATE_NR = "12345678";
         mockMvc.perform(post("/addPlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()));
-        assertTrue(plateRepository.findByPlateNr(EXAMPLE_PLATE_NR).isPresent());
+        assertTrue(!plateRepository.findByPlateNr(EXAMPLE_PLATE_NR).isEmpty());
     }
 
     @Test
@@ -190,5 +191,60 @@ public class MockTest {
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(env.getProperty("operatorPlateNotFound.plateNotFound"))));
+    }
+
+    @Test
+    public void shouldDriverStopMeter() throws Exception {
+        final String EXAMPLE_PLATE_NR = "12345678";
+        Plate plate = new Plate();
+        plate.setPlateNr(EXAMPLE_PLATE_NR);
+        plate.setStart(Instant.now());
+        plateRepository.save(plate);
+
+        mockMvc.perform(post("/stopAndPay").param("plateNr",EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", plate))
+                .andExpect(status().isOk());
+        assertNotNull(plateRepository.findAll().get(0).getPlateNr());
+    }
+
+    @Test
+    public void shouldDriverNotFindPlateAfterStopMeter() throws Exception {
+        final String EXAMPLE_PLATE_NR = "12345678";
+        Plate plate = new Plate();
+        plate.setPlateNr(EXAMPLE_PLATE_NR);
+        plate.setStart(Instant.now());
+        plate.setEnd(Instant.now());
+        plateRepository.save(plate);
+
+        mockMvc.perform(post("/savePlate").param("plateNr",EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", plate))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(env.getProperty("plateNotFound.plateNotFound"))));
+    }
+
+    private void findOpenPlateWhenAClosedOneIsInRepo(String url, String property) throws Exception {
+        final String EXAMPLE_PLATE_NR = "12345678";
+        Plate plate = new Plate();
+        plate.setPlateNr(EXAMPLE_PLATE_NR);
+        plate.setStart(Instant.now());
+        plate.setEnd(Instant.now());
+        plateRepository.save(plate);
+        plate.setEnd(null);
+        plateRepository.save(plate);
+
+        mockMvc.perform(post(url).param("plateNr", EXAMPLE_PLATE_NR)
+                .sessionAttr("plate", plate))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(env.getProperty(property))));
+    }
+
+    @Test
+    public void shouldDriverFindNewPlateAfterMeterStopThatIsRunning() throws Exception {
+        findOpenPlateWhenAClosedOneIsInRepo("/savePlate", "plateFound.plateFound");
+    }
+
+    @Test
+    public void shouldOperatorFindNewPlateAfterMeterStopThatIsRunning() throws Exception {
+        findOpenPlateWhenAClosedOneIsInRepo("/operatorPlateSearch","operatorPlateFound.plateFound");
     }
 }
