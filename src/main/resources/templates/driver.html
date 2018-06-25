@@ -5,18 +5,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body align="center">
-    <p th:text="#{driver.greeting}"></p>
-    <form action="#" th:action="@{/savePlate}" th:object="${plate}" method="post">
-        <span th:text="#{driver.platesText}"></span>: <input type="text" th:field="*{plateNr}"/>
-        <p><span th:text="#{driver.preferredCurrency}"></span>
+<p th:text="#{driver.greeting}"></p>
+<form action="#" th:action="@{/savePlate}" th:object="${plate}" method="post">
+    <span th:text="#{driver.platesText}"></span>: <input type="text" th:field="*{plateNr}"/>
+    <p><span th:text="#{driver.preferredCurrency}"></span>
         <select th:field="*{region}" name = "dropDown" >
-            <option th:each="country : ${regions}" th:value="${{regions}}" th:text="${regions}"></option>
+            <option th:each="regionId : ${regions}" th:value="${regions.get(regionId)}" th:text="${regions.get(regionId)}"></option>
         </select>
-        </p>
-        <p><input type="submit" th:value="#{common.submitText}"/></p>
-    </form>
-    <form action="/">
-        <input type="submit" th:value="#{common.returnHome}"/>
-    </form>
+    </p>
+    <p><input type="submit" th:value="#{common.submitText}"/></p>
+</form>
+<form action="/">
+    <input type="submit" th:value="#{common.returnHome}"/>
+</form>
 </body>
 </html>

@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import parking.entities.Plate;
 import parking.entities.enums.Region;
-import parking.services.PricingService;
 import parking.services.PlateManagerService;
+import parking.services.PricingService;
 
 import java.rmi.activation.UnknownObjectException;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -35,7 +35,7 @@ public class DriverController {
     @GetMapping("/driver")
     public String driverGreeter(Model model) {
         model.addAttribute("plate", new Plate());
-        Collection<Region> regions = Arrays.asList(Region.values());
+        List<Region> regions = Arrays.asList(Region.values());
         model.addAttribute("regions", regions);
         return "driver";
     }
