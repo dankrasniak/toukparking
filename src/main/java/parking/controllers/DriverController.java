@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import parking.entities.Plate;
 import parking.entities.enums.Region;
-import parking.repositories.PlateRepository;
-import parking.services.Pricing;
+import parking.services.PricingService;
+import parking.services.PlateManagerService;
 
 import java.rmi.activation.UnknownObjectException;
 import java.time.Instant;
@@ -21,14 +21,14 @@ import java.util.Optional;
 @Controller
 public class DriverController {
 
-    private final PlateRepository plateRepository;
-    private final Pricing pricing;
+    private final PlateManagerService plateManagerService;
+    private final PricingService pricingService;
     private final Environment env;
 
     @Autowired
-    public DriverController(PlateRepository plateRepository, Pricing pricing, Environment env) {
-        this.plateRepository = plateRepository;
-        this.pricing = pricing;
+    public DriverController(PlateManagerService plateManagerService, PricingService pricingService, Environment env) {
+        this.plateManagerService = plateManagerService;
+        this.pricingService = pricingService;
         this.env = env;
     }
 
@@ -42,18 +42,14 @@ public class DriverController {
 
     @PostMapping("/savePlate")
     public String savePlateSubmit(@ModelAttribute Plate plate, Model model) {
-        plate.setEnd(Instant.now());
         model.addAttribute("plate", plate);
 
-        Optional<Plate> searchResult = plateRepository.findByPlateNr(plate.getPlateNr()).parallelStream()
-                .filter(p -> p.getEnd() == null).findAny();
+        Optional<Plate> searchResult = plateManagerService.getPlateWithRunningMeter(plate.getPlateNr());
 
         if (searchResult.isPresent()) {
-            plate.setStart(searchResult.get().getStart());
-            plate.setVip(searchResult.get().isVip());
-
+            plateManagerService.copyStartVipAndStopMeter(plate, searchResult.get());
             try {
-                pricing.updatePrice(plate);
+                pricingService.updatePrice(plate);
             } catch (UnknownObjectException e) {
                 model.addAttribute("message", env.getProperty("error.unknownCurrency") + " " + e.getMessage());
                 return "unexpectedError";
@@ -66,28 +62,22 @@ public class DriverController {
 
     @PostMapping("/addPlate")
     public String plateNotFound(@ModelAttribute Plate plate) {
-        plate.setEnd(null);
-        plate.setStart(Instant.now());
-        plateRepository.save(plate);
+
+        plateManagerService.savePlateWithRunningMeter(Instant.now(), plate);
+
         return "plateAdded";
     }
 
     @PostMapping("/stopAndPay")
     public String stopAndPay(@ModelAttribute Plate plate, Model model) {
-
-        Optional<Plate> searchResult = plateRepository.findByPlateNr(plate.getPlateNr()).parallelStream()
-                .filter(p -> p.getEnd() == null).findAny();
+        Optional<Plate> searchResult = plateManagerService.getPlateWithRunningMeter(plate.getPlateNr());
 
         if (!searchResult.isPresent()) {
             model.addAttribute("message", env.getProperty("error.plateNotFound"));
             return "unexpectedError";
         }
 
-        searchResult.get().setEnd(plate.getEnd());
-        searchResult.get().setRegion(plate.getRegion());
-        searchResult.get().setPaid(plate.getPaid());
-
-        plateRepository.save(searchResult.get());
+        plateManagerService.updatePlateWithGivenId(searchResult.get().getId(), plate);
         return "successfullyStoppedMeter";
     }
 }

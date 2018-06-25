@@ -9,18 +9,18 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Service
-public class Pricing {
+public class PricingService {
 
-    private final Collection<RegionalPricing> regionalPricing;
+    private final Collection<AbstractRegionPricing> abstractRegionPricing;
 
     @Autowired
-    public Pricing(Collection<RegionalPricing> regionalPricing) {
-        this.regionalPricing = regionalPricing;
+    public PricingService(Collection<AbstractRegionPricing> abstractRegionPricing) {
+        this.abstractRegionPricing = abstractRegionPricing;
     }
 
     public void updatePrice(Plate plate) throws UnknownObjectException {
 
-        Optional<RegionalPricing> searchResult = regionalPricing.parallelStream()
+        Optional<AbstractRegionPricing> searchResult = abstractRegionPricing.parallelStream()
                 .filter(r -> r.matchRegion(plate)).findAny();
 
         if (!searchResult.isPresent())

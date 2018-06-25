@@ -13,7 +13,7 @@ import parking.Application;
 import parking.entities.Plate;
 import parking.entities.enums.Region;
 import parking.repositories.PlateRepository;
-import parking.services.Pricing;
+import parking.services.PricingService;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -41,7 +41,7 @@ public class MockTest {
     private Environment env;
 
     @Autowired
-    private Pricing pricing;
+    private PricingService pricing;
 
     @Before
     public void setUp() {

@@ -4,7 +4,7 @@ import parking.entities.Plate;
 
 import java.math.BigDecimal;
 
-public abstract class RegionalPricing {
+public abstract class AbstractRegionPricing {
 
     abstract boolean matchRegion(Plate plate);
 

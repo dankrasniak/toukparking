@@ -9,7 +9,7 @@ import java.time.Duration;
 import java.util.Objects;
 
 @Service
-public class PLNPricing extends RegionalPricing {
+public class PLNPricing extends AbstractRegionPricing {
 
     private static final BigDecimal FIRST_HOUR_VIP = BigDecimal.valueOf(0);
     private static final BigDecimal SECOND_HOUR_VIP = BigDecimal.valueOf(2);
