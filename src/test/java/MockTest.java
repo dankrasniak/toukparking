@@ -1,3 +1,4 @@
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,8 +11,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import parking.Application;
 import parking.entities.Plate;
+import parking.entities.enums.Region;
 import parking.repositories.PlateRepository;
+import parking.services.Pricing;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -35,6 +39,9 @@ public class MockTest {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private Pricing pricing;
 
     @Before
     public void setUp() {
@@ -83,21 +90,11 @@ public class MockTest {
     }
 
     @Test
-    public void shouldContainPlateNrInModel() throws Exception {
-        final String EXAMPLE_PLATE_NR = "12345678";
-        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
+    public void shouldContainPlateInModel() throws Exception {
+        mockMvc.perform(post("/savePlate")
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("plateNr"));
-    }
-
-    @Test
-    public void shouldContainExamplePlate() throws Exception {
-        final String EXAMPLE_PLATE_NR = "12345678";
-        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
-                .sessionAttr("plate", new Plate()))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("plateNr", containsString(EXAMPLE_PLATE_NR)));
+                .andExpect(model().attributeExists("plate"));
     }
 
     @Test
@@ -137,11 +134,14 @@ public class MockTest {
         final String EXAMPLE_PLATE_NR = "12345678";
         Plate plate = new Plate();
         plate.setPlateNr(EXAMPLE_PLATE_NR);
+        plate.setStart(Instant.now());
 
         plateRepository.save(plate);
 
-        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
-                .sessionAttr("plate", new Plate()))
+        mockMvc.perform(post("/savePlate")
+                .param("plateNr", EXAMPLE_PLATE_NR)
+                .param("region", Region.PLN.toString())
+                .sessionAttr("plate", plate))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(env.getProperty("plateFound.plateFound"))));
     }
@@ -201,7 +201,7 @@ public class MockTest {
         plate.setStart(Instant.now());
         plateRepository.save(plate);
 
-        mockMvc.perform(post("/stopAndPay").param("plateNr",EXAMPLE_PLATE_NR)
+        mockMvc.perform(post("/stopAndPay").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", plate))
                 .andExpect(status().isOk());
         assertNotNull(plateRepository.findAll().get(0).getPlateNr());
@@ -216,7 +216,7 @@ public class MockTest {
         plate.setEnd(Instant.now());
         plateRepository.save(plate);
 
-        mockMvc.perform(post("/savePlate").param("plateNr",EXAMPLE_PLATE_NR)
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", plate))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(env.getProperty("plateNotFound.plateNotFound"))));
@@ -233,6 +233,7 @@ public class MockTest {
         plateRepository.save(plate);
 
         mockMvc.perform(post(url).param("plateNr", EXAMPLE_PLATE_NR)
+                .param("region", Region.PLN.toString())
                 .sessionAttr("plate", plate))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(env.getProperty(property))));
@@ -245,6 +246,48 @@ public class MockTest {
 
     @Test
     public void shouldOperatorFindNewPlateAfterMeterStopThatIsRunning() throws Exception {
-        findOpenPlateWhenAClosedOneIsInRepo("/operatorPlateSearch","operatorPlateFound.plateFound");
+        findOpenPlateWhenAClosedOneIsInRepo("/operatorPlateSearch", "operatorPlateFound.plateFound");
+    }
+
+    private void priceCheck(Instant start, Instant end, boolean isVip) throws Exception {
+        if (Duration.between(start, end).isNegative())
+            throw new InvalidArgumentException(new String[]{"Negative Time!"});
+        final String EXAMPLE_PLATE_NR = "12345678";
+        Plate plate = new Plate();
+        plate.setPlateNr(EXAMPLE_PLATE_NR);
+        plate.setStart(start);
+        plate.setRegion(Region.PLN);
+        plate.setVip(isVip);
+        plateRepository.save(plate);
+
+        plate.setEnd(end);
+        pricing.updatePrice(plate);
+
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
+                .param("region", Region.PLN.toString())
+                .sessionAttr("plate", plate))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("value=\"" + plate.getPaid().toString() + "\"")));
+
+    }
+
+    @Test
+    public void shouldHavePlatePricedFor2HoursNonVIP() throws Exception {
+        priceCheck(Instant.now().minus(Duration.ofMinutes(121)), Instant.now(), false);
+    }
+
+    @Test
+    public void shouldHavePlatePricedFor2HoursVIP() throws Exception {
+        priceCheck(Instant.now().minus(Duration.ofMinutes(121)), Instant.now(), true);
+    }
+
+    @Test
+    public void shouldHavePlatePricedFor24HoursNonVIP() throws Exception {
+        priceCheck(Instant.now().minus(Duration.ofMinutes(1441)), Instant.now(), false);
+    }
+
+    @Test
+    public void shouldHavePlatePricedFor24HoursVIP() throws Exception {
+        priceCheck(Instant.now().minus(Duration.ofMinutes(1441)), Instant.now(), true);
     }
 }

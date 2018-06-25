@@ -8,7 +8,7 @@
     <h1 th:text="#{plateNotFound.plateNotFound}"></h1>
     <span th:text="#{plateNotFound.add}"></span>
     <form action="#" th:action="@{/addPlate}" th:object="${plate}" method="post">
-        <span th:text="#{driver.platesText}"></span>: <input type="text" th:field="*{plateNr}" hidden/>
+        <input type="text" th:field="*{plateNr}" hidden/>
         <span th:text="#{plateNotFound.vip}"></span>: <input type="checkbox" th:field="*{vip}"/>
         <p><input type="submit" th:value="#{common.submitText}"/></p>
     </form>

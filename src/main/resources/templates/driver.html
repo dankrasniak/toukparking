@@ -8,6 +8,11 @@
     <p th:text="#{driver.greeting}"></p>
     <form action="#" th:action="@{/savePlate}" th:object="${plate}" method="post">
         <span th:text="#{driver.platesText}"></span>: <input type="text" th:field="*{plateNr}"/>
+        <p><span th:text="#{driver.preferredCurrency}"></span>
+        <select th:field="*{region}" name = "dropDown" >
+            <option th:each="country : ${regions}" th:value="${{regions}}" th:text="${regions}"></option>
+        </select>
+        </p>
         <p><input type="submit" th:value="#{common.submitText}"/></p>
     </form>
     <form action="/">

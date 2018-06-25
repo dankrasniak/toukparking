@@ -1,8 +1,11 @@
 package parking.entities;
 
+import parking.entities.enums.Region;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -15,6 +18,24 @@ public class Plate {
     private boolean vip;
     private Instant start;
     private Instant end;
+    private Region region;
+    private BigDecimal paid;
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public BigDecimal getPaid() {
+        return paid;
+    }
+
+    public void setPaid(BigDecimal payed) {
+        this.paid = payed;
+    }
 
     public Instant getStart() {
         return start;

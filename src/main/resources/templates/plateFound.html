@@ -5,25 +5,28 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
+<form action="#" th:action="@{/stopAndPay}" th:object="${plate}" method="post">
     <h1 th:text="#{plateFound.result}"></h1>
-    <p th:text="#{plateFound.enteredPlatesText}+': '+${plateNr}"></p>
+    <p th:text="#{plateFound.enteredPlatesText}+': '+*{plateNr}"></p>
     <br>
     <p th:text="#{plateFound.plateFound}"></p>
     <br>
     <p th:text="#{plateFound.stopAndPay}"></p>
     <br>
-    <form action="#" th:action="@{/stopAndPay}" th:object="${plate}" method="post">
-        <input type="text" th:field="*{plateNr}" hidden/>
-        <input type="text" th:field="*{end}" hidden/>
-        <input type="submit" th:value="#{plateFound.ok}"/>
-    </form>
-
-
-    <form action="/driver">
-        <input type="submit" th:value="#{common.returnText}"/>
-    </form>
-    <form action="/">
-        <input type="submit" th:value="#{common.returnHome}"/>
-    </form>
+    <span th:text="#{plateFound.price}+': '"></span><span th:text="*{paid.doubleValue()}"></span>
+    <br>
+    <br>
+    <input type="text" th:field="*{plateNr}" hidden/>
+    <input type="text" th:field="*{end}" hidden/>
+    <input type="text" th:field="*{paid}" hidden/>
+    <input type="text" th:field="*{region}" hidden/>
+    <input type="submit" th:value="#{plateFound.ok}"/>
+</form>
+<form action="/driver">
+    <input type="submit" th:value="#{common.returnText}"/>
+</form>
+<form action="/">
+    <input type="submit" th:value="#{common.returnHome}"/>
+</form>
 </body>
 </html>
