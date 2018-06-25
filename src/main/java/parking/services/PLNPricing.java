@@ -26,7 +26,7 @@ public class PLNPricing extends RegionalPricing {
 
     @Override
     public BigDecimal calculatePrice(Plate plate) {
-        long duration = Duration.between(plate.getEnd(), plate.getStart()).toHours();
+        long duration = Duration.between(plate.getStart(), plate.getEnd()).toHours();
 
         if (plate.isVip())
             return calculatePriceAdequately(duration, FIRST_HOUR_VIP, SECOND_HOUR_VIP, NEXT_HOUR_VIP);
