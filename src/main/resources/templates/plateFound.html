@@ -4,7 +4,7 @@
     <title th:text="#{plateFound.title}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
-<body>
+<body align="center">
 <form action="#" th:action="@{/stopAndPay}" th:object="${plate}" method="post">
     <h1 th:text="#{plateFound.result}"></h1>
     <p th:text="#{plateFound.enteredPlatesText}+': '+*{plateNr}"></p>

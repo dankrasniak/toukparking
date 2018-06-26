@@ -4,7 +4,7 @@
     <title th:text="#{plateNotFound.title}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
-<body>
+<body align="center">
     <h1 th:text="#{plateNotFound.plateNotFound}"></h1>
     <span th:text="#{plateNotFound.add}"></span>
     <form action="#" th:action="@{/addPlate}" th:object="${plate}" method="post">
