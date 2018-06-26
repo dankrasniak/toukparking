@@ -8,9 +8,13 @@ import parking.repositories.PlateRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PlateManagerService {
+
+    private static final Logger log = LoggerFactory.getLogger(PlateManagerService.class);
 
     private final PlateRepository plateRepository;
 
@@ -27,11 +31,13 @@ public class PlateManagerService {
     public void savePlateWithRunningMeter(Instant start, Plate plate) {
         plate.setEnd(null);
         plate.setStart(start);
+        log.info("The meter for plate: " + plate.getPlateNr() + " has been started at " + Instant.now());
         plateRepository.save(plate);
     }
 
     public void updatePlateWithGivenId(Long id, Plate plate) {
         plate.setId(id);
+        log.info("The meter for plate: " + plate.getPlateNr() + " has been stopped at " + Instant.now());
         plateRepository.save(plate);
     }
 
