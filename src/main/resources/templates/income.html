@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{income.title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body align="center">
+    <span th:text="#{income.incomeForDay}"></span>
+    <span th:text="${date}"></span>
+    <span th:text="#{income.is}"></span>
+    <span th:text="${income}"></span>
+    <br>
+    <br>
+    <form action="/owner">
+        <input type="submit" th:value="#{common.returnText}"/>
+    </form>
+    <form action="/">
+        <input type="submit" th:value="#{common.returnHome}"/>
+    </form>
+</body>
+</html>

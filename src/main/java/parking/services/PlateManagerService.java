@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import parking.entities.Plate;
 import parking.repositories.PlateRepository;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -38,5 +39,10 @@ public class PlateManagerService {
         plateTo.setEnd(Instant.now());
         plateTo.setStart(plateFrom.getStart());
         plateTo.setVip(plateFrom.isVip());
+    }
+
+    public BigDecimal getIncome(Instant start ,Instant end) {
+        return plateRepository.findByEndBetween(start, end)
+                .parallelStream().map(Plate::getPaid).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
