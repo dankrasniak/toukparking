@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import parking.entities.enums.Region;
 import parking.services.PlateManagerService;
 import parking.services.PricingService;
 
+import javax.validation.Valid;
 import java.rmi.activation.UnknownObjectException;
 import java.time.Instant;
 import java.util.Arrays;
@@ -35,13 +37,21 @@ public class DriverController {
     @GetMapping("/driver")
     public String driverGreeter(Model model) {
         model.addAttribute("plate", new Plate());
-        List<Region> regions = Arrays.asList(Region.values());
-        model.addAttribute("regions", regions);
+        uploadRegions(model);
         return "driver";
     }
 
+    private void uploadRegions(Model model) {
+        List<Region> regions = Arrays.asList(Region.values());
+        model.addAttribute("regions", regions);
+    }
+
     @PostMapping("/savePlate")
-    public String savePlateSubmit(@ModelAttribute Plate plate, Model model) {
+    public String savePlateSubmit(@Valid @ModelAttribute Plate plate, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            uploadRegions(model);
+            return "driver";
+        }
         model.addAttribute("plate", plate);
 
         Optional<Plate> searchResult = plateManagerService.getPlateWithRunningMeter(plate.getPlateNr());

@@ -93,7 +93,8 @@ public class MockTest {
 
     @Test
     public void shouldContainPlateInModel() throws Exception {
-        mockMvc.perform(post("/savePlate")
+        final String EXAMPLE_PLATE_NR = "12345678";
+        mockMvc.perform(post("/savePlate").param("plateNr", EXAMPLE_PLATE_NR)
                 .sessionAttr("plate", new Plate()))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("plate"));
@@ -121,6 +122,7 @@ public class MockTest {
         final String EXAMPLE_PLATE_NR = "12345678";
         Plate plate = new Plate();
         plate.setPlateNr(EXAMPLE_PLATE_NR);
+        plate.setStart(Instant.now());
         plate.setEnd(Instant.now());
 
         plateRepository.save(plate);
@@ -176,6 +178,7 @@ public class MockTest {
     public void shouldOperatorSearchPlatePageFindPlateWithGivenNr() throws Exception {
         final String EXAMPLE_PLATE_NR = "12345678";
         Plate plate = new Plate();
+        plate.setStart(Instant.now());
         plate.setPlateNr(EXAMPLE_PLATE_NR);
         plateRepository.save(plate);
 
@@ -204,6 +207,7 @@ public class MockTest {
         plateRepository.save(plate);
 
         mockMvc.perform(post("/stopAndPay").param("plateNr", EXAMPLE_PLATE_NR)
+                .param("start", Instant.now().toString())
                 .sessionAttr("plate", plate))
                 .andExpect(status().isOk());
         assertNotNull(plateRepository.findAll().get(0).getPlateNr());

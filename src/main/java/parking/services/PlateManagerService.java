@@ -1,5 +1,7 @@
 package parking.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import parking.entities.Plate;
@@ -8,8 +10,6 @@ import parking.repositories.PlateRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class PlateManagerService {
@@ -24,12 +24,13 @@ public class PlateManagerService {
     }
 
     public Optional<Plate> getPlateWithRunningMeter(String plateNr) {
-        return plateRepository.findByPlateNr(plateNr).parallelStream()
+        return plateRepository.findByPlateNr(plateNr.toUpperCase()).parallelStream()
                 .filter(p -> p.getEnd() == null).findAny();
     }
 
     public void savePlateWithRunningMeter(Instant start, Plate plate) {
         plate.setEnd(null);
+        plate.setPlateNr(plate.getPlateNr().toUpperCase());
         plate.setStart(start);
         log.info("The meter for plate: " + plate.getPlateNr() + " has been started at " + Instant.now());
         plateRepository.save(plate);
@@ -37,6 +38,7 @@ public class PlateManagerService {
 
     public void updatePlateWithGivenId(Long id, Plate plate) {
         plate.setId(id);
+        plate.setPlateNr(plate.getPlateNr().toUpperCase());
         log.info("The meter for plate: " + plate.getPlateNr() + " has been stopped at " + Instant.now());
         plateRepository.save(plate);
     }
@@ -47,7 +49,7 @@ public class PlateManagerService {
         plateTo.setVip(plateFrom.isVip());
     }
 
-    public BigDecimal getIncome(Instant start ,Instant end) {
+    public BigDecimal getIncome(Instant start, Instant end) {
         return plateRepository.findByEndBetween(start, end)
                 .parallelStream().map(Plate::getPaid).reduce(BigDecimal.ZERO, BigDecimal::add);
     }

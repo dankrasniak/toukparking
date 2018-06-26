@@ -8,6 +8,7 @@
     <p th:text="#{operator.greeting}"></p>
     <form action="#" th:action="@{/operatorPlateSearch}" th:object="${plate}" method="post">
         <span th:text="#{driver.platesText}"></span>: <input type="text" th:field="*{plateNr}"/>
+        <span class="alert alert-danger" th:if="${#fields.hasErrors('plateNr')}" th:errors="*{plateNr}"></span>
         <p><input type="submit" th:value="#{common.submitText}"/></p>
     </form>
     <form action="/">
