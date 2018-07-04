@@ -1,5 +1,6 @@
 package parking.entities;
 
+import lombok.Data;
 import parking.validators.ProperPlate;
 import parking.entities.enums.Region;
 
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
+@Data
 public class Plate {
 
     @Id
@@ -27,59 +29,14 @@ public class Plate {
     private Region region;
     private BigDecimal paid;
 
-    public Region getRegion() {
-        return region;
-    }
+    public Plate () {}
 
-    public void setRegion(Region region) {
-        this.region = region;
-    }
-
-    public BigDecimal getPaid() {
-        return paid;
-    }
-
-    public void setPaid(BigDecimal payed) {
-        this.paid = payed;
-    }
-
-    public Instant getStart() {
-        return start;
-    }
-
-    public void setStart(Instant start) {
-        this.start = start;
-    }
-
-    public Instant getEnd() {
-        return end;
-    }
-
-    public void setEnd(Instant end) {
-        this.end = end;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPlateNr() {
-        return plateNr;
-    }
-
-    public void setPlateNr(String plateNr) {
+    public Plate(@NotNull @Size(min = 8, max = 8, message = "{error.sizeIs}") String plateNr, boolean vip, Instant start, Instant end, Region region, BigDecimal paid) {
         this.plateNr = plateNr;
-    }
-
-    public boolean isVip() {
-        return vip;
-    }
-
-    public void setVip(boolean vip) {
         this.vip = vip;
+        this.start = start;
+        this.end = end;
+        this.region = region;
+        this.paid = paid;
     }
 }

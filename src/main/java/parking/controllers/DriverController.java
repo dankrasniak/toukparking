@@ -55,19 +55,21 @@ public class DriverController {
         model.addAttribute("plate", plate);
 
         Optional<Plate> searchResult = plateManagerService.getPlateWithRunningMeter(plate.getPlateNr());
+        return searchResult.map(plateFound -> {
 
-        if (searchResult.isPresent()) {
-            plateManagerService.copyStartVipAndStopMeter(plate, searchResult.get());
+            plateManagerService.copyStartVipAndStopMeter(plate, plateFound);
+
             try {
                 pricingService.updatePrice(plate);
+
             } catch (UnknownObjectException e) {
+
                 model.addAttribute("message", env.getProperty("error.unknownCurrency") + " " + e.getMessage());
                 return "unexpectedError";
             }
 
             return "plateFound";
-        }
-        return "plateNotFound";
+        }).orElse("plateNotFound");
     }
 
     @PostMapping("/addPlate")
@@ -82,12 +84,13 @@ public class DriverController {
     public String stopAndPay(@ModelAttribute Plate plate, Model model) {
         Optional<Plate> searchResult = plateManagerService.getPlateWithRunningMeter(plate.getPlateNr());
 
-        if (!searchResult.isPresent()) {
+        return searchResult.map(plateFound -> {
+            plateManagerService.updatePlateWithGivenId(plateFound.getId(), plate);
+            return "successfullyStoppedMeter";
+
+        }).orElseGet(() -> {
             model.addAttribute("message", env.getProperty("error.plateNotFound"));
             return "unexpectedError";
-        }
-
-        plateManagerService.updatePlateWithGivenId(searchResult.get().getId(), plate);
-        return "successfullyStoppedMeter";
+        });
     }
 }
